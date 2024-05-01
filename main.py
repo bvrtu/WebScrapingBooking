@@ -9,25 +9,34 @@ soup = BeautifulSoup(response.text, 'html.parser')
 hotels = soup.find_all('div', {"data-testid":"property-card"})
 hotels_data = []
 
+rating_type = ""
+
 for hotel in hotels:
 
     name_element = hotel.find('div', {'data-testid': 'title'})
-    rating_element = hotel.find("div", {"class": "a3b8729ab1 d86cee9b25"})
+    rating_element = hotel.find("span", {"class": "a3332d346a"})
     address_element = hotel.find("span", {"data-testid":"address"})
     distance_element = hotel.find("span", {"data-testid": "distance"})
     price_element = hotel.find("span", {"class": "f6431b446c fbfd7c1165 e84eb96b1f"})
 
     name = name_element.text.strip()
-    rating = rating_element.text.strip().split()
+    if (rating_element is not None):
+        rating_type = rating_element.text.strip().split()[0]
+        rating = rating_element.text.strip().split()[1]
+    else:
+        rating_element = hotel.find("div", {"class": "a3b8729ab1 d86cee9b25"})
+        rating_type = "Not Given"
+        rating = rating_element.text.strip().split()[1]
+
     address = address_element.text.strip()
     distance = distance_element.text.strip()
     price = price_element.text.strip()
 
-    hotels_data.append({'Hotel Name': name,"Address": address, "Distance": distance, 'Rating': rating[1], "Price": price})
+    hotels_data.append({'Hotel Name': name,"Address": address, "Distance": distance, 'Type and Rating': rating_type + "\n" + rating, "Price": price})
 
 hotels_data = hotels_data[:10]
 
-hotels_data.sort(key=lambda x: x['Rating'], reverse=True)
+hotels_data.sort(key=lambda x: float(x['Type and Rating'].split('\n')[1]), reverse=True)
 
 hotels = pd.DataFrame(hotels_data)
 hotels.head()
