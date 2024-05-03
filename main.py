@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import ttk
 import ttkbootstrap as ttk
 from ttkbootstrap.widgets import DateEntry
+from tkinter import messagebox
 
 
 class HotelScraper:
@@ -53,13 +54,18 @@ class HotelScraper:
             name = name_element.text.strip()
 
             rating_element = hotel.find("span", {"class": "a3332d346a"})
+
             if (rating_element is not None):
                 rating_type = rating_element.text.strip().split()[0]
                 rating = rating_element.text.strip().split()[1]
             else:
                 rating_element = hotel.find("div", {"class": "a3b8729ab1 d86cee9b25"})
-                rating_type = "Not Given"
-                rating = rating_element.text.strip().split()[1]
+                if (rating_element is not None):
+                    rating_type = "Not Given"
+                    rating = rating_element.text.strip().split()[1]
+                else:
+                    rating_tyoe = "Not Given"
+                    rating = "Not Given"
 
             address_element = hotel.find("span", {"data-testid": "address"})
             address = address_element.text.strip()
@@ -75,7 +81,7 @@ class HotelScraper:
 
             counter += 1
 
-        #hotels_data.sort(key=lambda x: float(x['Type and Rating'].split('\n')[1]), reverse=True)
+        hotels_data.sort(key=lambda x: float(x['Type and Rating'].split('\n')[1]), reverse=True)
 
         hotels = pd.DataFrame(hotels_data)
         hotels.head()
@@ -83,8 +89,8 @@ class HotelScraper:
 
 
 class GUI:
-    def __init__(self, master):
-        self.master = master
+    def __init__(self):
+        pass
 
     def gui(self):
         check_in_date = ""
@@ -95,6 +101,9 @@ class GUI:
             nonlocal check_in_date, check_out_date
             check_in_date = calendar1.entry.get()
             check_out_date = calendar2.entry.get()
+            if check_out_date <= check_in_date:
+                messagebox.showerror("Error", "Check-out date cannot be before or same as check-in date.")
+                return
             f_check_in_date = check_in_date.split("/")
             f_check_out_date = check_out_date.split("/")
             check_in_date = "20" + f_check_in_date[2] + "-" + f_check_in_date[0] + "-" + f_check_in_date[1]
@@ -105,6 +114,14 @@ class GUI:
             city_string = combobox.get()
 
         def searchfunc(city,date1,date2):
+            if not date1 or not date2:
+                messagebox.showerror("Error", "Please select check-in and check-out dates.")
+                return
+
+            if not city:
+                messagebox.showerror("Error", "Please select a city.")
+                return
+
             scraper = HotelScraper()
             scraper.scrape_hotels(city_string, check_in_date, check_out_date)
 
@@ -114,7 +131,7 @@ class GUI:
         window.state("zoomed")
 
         # first frame to choose city
-        frame1 = ttk.Frame(window, width=500, height=250, borderwidth=10, relief="groove")
+        frame1 = ttk.Frame(window, width=300, height=200, borderwidth=10, relief="groove")
         frame1.pack_propagate(False)
         frame1.place(x=0, y=0, anchor="nw")
 
@@ -122,10 +139,16 @@ class GUI:
         city_label.pack()
 
         items = ("Rome", "Barcelona", "Paris", "Berlin", "London", "Vienna", "Brussels", "Amsterdam", "Zurich", "Budapest")
-        comboboxString = tk.StringVar(value=items[0])
+        comboboxString = tk.StringVar()
         combobox = ttk.Combobox(frame1, state="readonly", width=10, height=5, textvariable=comboboxString)
         combobox["values"] = items
         combobox.pack()
+
+        city_label2 = ttk.Label(frame1, text="Selected City:")
+        city_label2.place(x=68, y=150)
+
+        city_label3 = ttk.Label(frame1,textvariable=comboboxString)
+        city_label3.place(x=155, y =150)
 
         combobox.bind("<<ComboboxSelected>>", get_city)
 
@@ -163,10 +186,8 @@ class GUI:
 
 
 def main():
-    root = tk.Tk()
-    app = GUI(root)
+    app = GUI()
     app.gui()
-
 
 if __name__ == "__main__":
     main()
