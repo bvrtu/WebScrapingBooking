@@ -90,13 +90,14 @@ class HotelScraper:
 
 class GUI:
     def __init__(self):
-        pass
+        self.currency = None
 
     def gui(self):
         check_in_date = ""
         check_out_date = ""
         city_string = ""
         hotels_dataframe = None
+
 
         def get_dates():
             nonlocal check_in_date, check_out_date
@@ -114,7 +115,22 @@ class GUI:
             nonlocal city_string
             city_string = combobox.get()
 
+        def convert_to_tl(price):
+            euro_to_tl = 30
+
+            price_tl = round(float(price.strip('€').replace(',', '.')) * euro_to_tl, 2)
+            return f"{price_tl} TL"
+
+        def euro_clicked():
+            self.currency = "euro"
+
+        def tl_clicked():
+            self.currency = "tl"
+
         def searchfunc(city,date1,date2):
+
+            global currency
+
             if not date1 or not date2:
                 messagebox.showerror("Error", "Please select check-in and check-out dates.")
                 return
@@ -123,10 +139,18 @@ class GUI:
                 messagebox.showerror("Error", "Please select a city.")
                 return
 
+            if not self.currency:
+                messagebox.showerror("Error", "Please select a currency type.")
+                return
+
             scraper = HotelScraper()
             scraper.scrape_hotels(city_string, check_in_date, check_out_date)
 
             hotels_data = pd.read_csv('myhotels.csv')
+
+            if (self.currency == "tl"):
+                for index, row in hotels_data.iterrows():
+                    hotels_data.at[index, 'Price'] = convert_to_tl(row['Price'])
 
             custom_style = ttk.Style()
             custom_style.configure("Custom.Treeview", rowheight=65)
@@ -221,12 +245,12 @@ class GUI:
         frame4.pack_propagate(False)
         frame4.place(x=900,y=0)
 
-        label4 = ttk.Label(frame4, text="Price Type")
+        label4 = ttk.Label(frame4, text="Price Currency")
         label4.pack()
 
-        radiobutton = ttk.Radiobutton(frame4, text="Euro",value=1)
+        radiobutton = ttk.Radiobutton(frame4, text="Euro",value=1,command=euro_clicked)
         radiobutton.pack(pady=40)
-        radiobutton2 = ttk.Radiobutton(frame4, text="TL",value=2)
+        radiobutton2 = ttk.Radiobutton(frame4, text="TL",value=2,command=tl_clicked)
         radiobutton2.pack()
 
         hotelframe = ttk.Frame(window,width=2000,height=500,borderwidth=10, relief="groove")
