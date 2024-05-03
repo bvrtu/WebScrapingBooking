@@ -96,6 +96,7 @@ class GUI:
         check_in_date = ""
         check_out_date = ""
         city_string = ""
+        hotels_dataframe = None
 
         def get_dates():
             nonlocal check_in_date, check_out_date
@@ -124,6 +125,40 @@ class GUI:
 
             scraper = HotelScraper()
             scraper.scrape_hotels(city_string, check_in_date, check_out_date)
+
+            hotels_data = pd.read_csv('myhotels.csv')
+
+            custom_style = ttk.Style()
+            custom_style.configure("Custom.Treeview", rowheight=65)
+
+            # Create a treeview to display hotel data
+            tree = ttk.Treeview(hotelframe,style="Custom.Treeview")
+            tree["columns"] = ("Hotel Name", "Address", "Distance", "Type and Rating", "Price")
+
+            # Define columns
+            tree.column("#0", width=0, stretch=tk.NO)  # Hidden column
+            tree.column("Hotel Name", anchor=tk.W, width=400)
+            tree.column("Address", anchor=tk.W, width=400)
+            tree.column("Distance", anchor=tk.W, width=400)
+            tree.column("Type and Rating", anchor=tk.W, width=400)
+            tree.column("Price", anchor=tk.W, width=400)
+
+            # Define headings
+            tree.heading("#0", text="", anchor=tk.W)
+            tree.heading("Hotel Name", text="Hotel Name", anchor=tk.W)
+            tree.heading("Address", text="Address", anchor=tk.W)
+            tree.heading("Distance", text="Distance", anchor=tk.W)
+            tree.heading("Type and Rating", text="Type and Rating", anchor=tk.W)
+            tree.heading("Price", text="Price", anchor=tk.W)
+
+            # Insert data into treeview
+            for index, row in hotels_data.head(5).iterrows():
+                tree.insert("", index, values=(
+                row['Hotel Name'], row['Address'], row['Distance'], row['Type and Rating'], row['Price']))
+
+            # Pack treeview
+            tree.pack(expand=True, fill=tk.BOTH)
+
 
         # window
         window = ttk.Window(themename="darkly")
@@ -177,7 +212,7 @@ class GUI:
         button.pack()
 
         frame3 = ttk.Frame(mainframe)
-        frame3.pack(side = "bottom")
+        frame3.place(x=645,y=270)
 
         button2 = ttk.Button(frame3, text="Find Your Hotel!",command=lambda: searchfunc(city_string,check_in_date,check_out_date))
         button2.pack()
@@ -193,6 +228,9 @@ class GUI:
         radiobutton.pack(pady=40)
         radiobutton2 = ttk.Radiobutton(frame4, text="TL",value=2)
         radiobutton2.pack()
+
+        hotelframe = ttk.Frame(window,width=2000,height=500,borderwidth=10, relief="groove")
+        hotelframe.pack()
 
         window.mainloop()
 
