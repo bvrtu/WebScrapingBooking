@@ -130,10 +130,14 @@ class GUI:
         window.title("Find Your Hotel")
         window.state("zoomed")
 
+        mainframe = ttk.Frame(window,width=2000,height=400,borderwidth=10, relief="groove")
+        mainframe.pack_propagate(False)
+        mainframe.pack()
+
         # first frame to choose city
-        frame1 = ttk.Frame(window, width=300, height=200, borderwidth=10, relief="groove")
+        frame1 = ttk.Frame(mainframe, width=300, height=200, borderwidth=10, relief="groove")
         frame1.pack_propagate(False)
-        frame1.place(x=0, y=0, anchor="nw")
+        frame1.place(x=200,y=0)
 
         city_label = ttk.Label(frame1, text="Choose a city from the list.")
         city_label.pack()
@@ -153,9 +157,9 @@ class GUI:
         combobox.bind("<<ComboboxSelected>>", get_city)
 
         # second frame to select check-in and out dates
-        frame2 = ttk.Frame(window, width=500, height=250, borderwidth=10, relief="groove")
+        frame2 = ttk.Frame(mainframe,width=300, height=200,borderwidth=10, relief="groove")
         frame2.pack_propagate(False)
-        frame2.place(relx=1.0, y=0, anchor="ne")
+        frame2.place(x=550,y=0)
 
         label1 = ttk.Label(frame2, text="Check-in Date")
         label1.pack()
@@ -169,18 +173,26 @@ class GUI:
         calendar2 = DateEntry(frame2)
         calendar2.pack(pady=10)
 
-        button = ttk.Button(frame2, text="OK", command=get_dates)
+        button = ttk.Button(frame2, text="Select Dates", command=get_dates)
         button.pack()
 
-        frame3 = ttk.Frame(window, width=500, height=250, borderwidth=10, relief="groove")
-        frame3.pack_propagate(False)
+        frame3 = ttk.Frame(mainframe)
         frame3.pack(side = "bottom")
 
-        label3 = ttk.Label(frame3, text="Search")
-        label3.pack()
-
-        button2 = ttk.Button(frame3, text="Search",command=lambda: searchfunc(city_string,check_in_date,check_out_date))
+        button2 = ttk.Button(frame3, text="Find Your Hotel!",command=lambda: searchfunc(city_string,check_in_date,check_out_date))
         button2.pack()
+
+        frame4 = ttk.Frame(mainframe,width=300, height=200,borderwidth=10, relief="groove")
+        frame4.pack_propagate(False)
+        frame4.place(x=900,y=0)
+
+        label4 = ttk.Label(frame4, text="Price Type")
+        label4.pack()
+
+        radiobutton = ttk.Radiobutton(frame4, text="Euro",value=1)
+        radiobutton.pack(pady=40)
+        radiobutton2 = ttk.Radiobutton(frame4, text="TL",value=2)
+        radiobutton2.pack()
 
         window.mainloop()
 
