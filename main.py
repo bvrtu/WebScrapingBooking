@@ -7,12 +7,13 @@ from tkinter import ttk
 import ttkbootstrap as ttk
 from ttkbootstrap.widgets import DateEntry
 from tkinter import messagebox
+import locale
 
 
 class HotelScraper:
 
 
-    #Checking internet connection
+    # Checking internet connection
 
     def check_internet_connection(self):
         try:
@@ -158,10 +159,24 @@ class GUI:
 
         # Converting the currency
 
-        def convert_to_tl(price):
-            euro_to_tl = 30
+        def convert_to_euro(price_tl):
+            tl_to_euro_rate = 0.0333333  # TL to Euro conversion rate (1 TL = 0.0333333 Euro)
+            price_tl = price_tl.replace('TL', '').strip()  # Remove 'TL' and any leading/trailing whitespace
+            price_euro = round(float(price_tl) * tl_to_euro_rate, 2)
+            return f"{price_euro} €"
 
-            price_tl = round(float(price.strip('€').replace(',', '.')) * euro_to_tl, 2)
+        def convert_to_tl(price_euro):
+            euro_to_tl_rate = 30  # Euro to TL conversion rate (1 Euro = 30 TL)
+
+            # Set locale for the correct interpretation of decimal numbers
+            locale.setlocale(locale.LC_NUMERIC, 'en_US.UTF-8')  # Assuming English locale
+
+            # Remove '€' and any leading/trailing whitespace
+            price_euro = price_euro.replace('€', '').strip()
+
+            # Convert to float and apply conversion rate
+            price_tl = round(locale.atof(price_euro) * euro_to_tl_rate, 2)
+
             return f"{price_tl} TL"
 
         def euro_clicked():
@@ -172,12 +187,68 @@ class GUI:
         def tl_clicked():
             self.currency = "tl"
 
-        # When you press the "Find Your Hotel!" button this function works. All frames, buttons, tree, etc. in this function.
+        def update_treeview():
+            hotels_data = pd.read_csv('myhotels.csv')
+            for child in hotelframe.winfo_children():
+                if isinstance(child, ttk.Treeview):
+                    child.destroy()
+
+            tree = ttk.Treeview(hotelframe, style="Custom.Treeview")
+            tree["columns"] = ("Hotel Name", "Address", "Distance", "Type and Rating", "Price")
+
+            tree.column("#0", width=0, stretch=tk.NO)  # Hidden column
+            tree.column("Hotel Name", anchor=tk.W, width=400)
+            tree.column("Address", anchor=tk.W, width=400)
+            tree.column("Distance", anchor=tk.W, width=400)
+            tree.column("Type and Rating", anchor=tk.W, width=400)
+            tree.column("Price", anchor=tk.W, width=400)
+
+            tree.heading("#0", text="", anchor=tk.W)
+            tree.heading("Hotel Name", text="Hotel Name", anchor=tk.W)
+            tree.heading("Address", text="Address", anchor=tk.W)
+            tree.heading("Distance", text="Distance", anchor=tk.W)
+            tree.heading("Type and Rating", text="Type and Rating", anchor=tk.W)
+            tree.heading("Price", text="Price", anchor=tk.W)
+
+            for index, row in hotels_data.head(5).iterrows():
+                tree.insert("", index, values=(
+                    row['Hotel Name'], row['Address'], row['Distance'], row['Type and Rating'], row['Price']))
+
+            tree.pack(expand=True, fill=tk.BOTH)
+
+        # When you press the "Find Your Hotel!" button this function works.
 
         def searchfunc(city,date1,date2):
 
-            if self.last_search["city"] == city and self.last_search["check_in_date"] == date1 and self.last_search["check_out_date"] == date2 and self.last_search["currency"] == self.currency:
-                messagebox.showinfo("Warning", "You haven't changed any values from your last search.")
+            if self.last_search["city"] == city and self.last_search["check_in_date"] == date1 and self.last_search["check_out_date"] == date2:
+                if self.last_search["currency"] != self.currency:
+                    if self.currency == "tl":
+                        hotels_data = pd.read_csv('myhotels.csv')
+                        for index, row in hotels_data.iterrows():
+                            hotels_data.at[index, 'Price'] = convert_to_tl(row['Price'])
+                        hotels_data.to_csv('myhotels.csv', header=True, index=False)
+
+                        update_treeview()
+
+                        messagebox.showinfo("Info", "Currency conversion applied.")
+
+                        self.last_search["currency"] = self.currency
+
+                    elif self.currency == "euro":
+                        hotels_data = pd.read_csv('myhotels.csv')
+                        for index, row in hotels_data.iterrows():
+                            hotels_data.at[index, 'Price'] = convert_to_euro(row['Price'])
+                        hotels_data.to_csv('myhotels.csv', header=True, index=False)
+
+                        update_treeview()
+
+                        messagebox.showinfo("Info", "Currency conversion applied.")
+
+                        self.last_search["currency"] = self.currency
+
+
+                else:
+                    messagebox.showinfo("Warning", "You haven't changed any values from your last search.")
                 return
 
             self.last_search["city"] = city
@@ -214,6 +285,13 @@ class GUI:
 
                 # Writes on csv file
                 hotels_data.to_csv('myhotels.csv', header=True, index=False)
+
+            update_treeview()
+
+            self.last_search["city"] = city
+            self.last_search["check_in_date"] = date1
+            self.last_search["check_out_date"] = date2
+            self.last_search["currency"] = self.currency
 
             custom_style = ttk.Style()
             custom_style.configure("Custom.Treeview", rowheight=65)
