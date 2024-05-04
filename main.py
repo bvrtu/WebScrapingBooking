@@ -11,92 +11,119 @@ from tkinter import messagebox
 
 class HotelScraper:
 
+
+    #Checking internet connection
+
+    def check_internet_connection(self):
+        try:
+            requests.get("https://www.google.com", timeout=5)
+            return True
+        except requests.ConnectionError:
+            return False
+
     # Web Scraping Function
 
     def scrape_hotels(self, city, date1, date2):
 
-        if city == "Rome":
-            url = "https://www.booking.com/searchresults.html?ss=Rome%2C+Lazio%2C+Italy&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-126693&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=68f06406a62e018b&ac_meta=GhA5MzJkNjQwYzI3ODQwMDQwIAAoATICZW46BHJvbWVAAEoAUAA%3D&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
-        elif city == "Barcelona":
-            url = "https://www.booking.com/searchresults.html?ss=Barcelona%2C+Catalonia%2C+Spain&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-372490&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=1ecb654f2a0201c9&ac_meta=GhBkZmJlNjU2ZDQwYjgwMzI2IAAoATICZW46CWJhcmNlbG9uYUAASgBQAA%3D%3D&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
-        elif city == "Paris":
-            url = "https://www.booking.com/searchresults.html?ss=Paris%2C+Ile+de+France%2C+France&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-1456928&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=5a1c6547c8b503ed&ac_meta=GhA0N2FkNjU0ZWZiYjYwMzI3IAAoATICZW46BXBhcmlzQABKAFAA&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
-        elif city == "Berlin":
-            url = "https://www.booking.com/searchresults.html?ss=Berlin%2C+Berlin+Federal+State%2C+Germany&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-1746443&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=b2cb652eee2e0712&ac_meta=GhBjMGI1NjUzZTA2M2UwMTViIAAoATICZW46BmJlcmxpbkAASgBQAA%3D%3D&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
-        elif city == "London":
-            url = "https://www.booking.com/searchresults.html?ss=London%2C+Greater+London%2C+United+Kingdom&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-2601889&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=649964ae8d98025f&ac_meta=GhBmYzBlNjRiZjgyYWEwMjVlIAAoATICZW46BmxvbmRvbkAASgBQAA%3D%3D&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
-        elif city == "Vienna":
-            url = "https://www.booking.com/searchresults.html?ss=Vienna%2C+Vienna+%28state%29%2C+Austria&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-1995499&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=c85664a1e65a01a7&ac_meta=GhBkOWQyNjRhZDA3ZTQwMjI4IAAoATICZW46BnZpZW5uYUAASgBQAA%3D%3D&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
-        elif city == "Brussels":
-            url = "https://www.booking.com/searchresults.html?ss=Brussels%2C+Brussels+Region%2C+Belgium&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-1955538&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=4ad451e0f8d6005c&ac_meta=GhA4ZDExNTFlNmI2NjIwMDYzIAAoATICZW46CGJydXNzZWxzQABKAFAA&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
-        elif city == "Amsterdam":
-            url = "https://www.booking.com/searchresults.html?ss=Amsterdam%2C+Noord-Holland%2C+Netherlands&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-2140479&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=c6dc6484bb650445&ac_meta=GhBiM2M5NjQ5MWZiNWMwMGNmIAAoATICZW46CWFtc3RlcmRhbUAASgBQAA%3D%3D&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
-        elif city == "Zurich":
-            url = "https://www.booking.com/searchresults.html?ss=Z%C3%BCrich%2C+Canton+of+Zurich%2C+Switzerland&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-2554935&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=d57b640de50301d5&ac_meta=GhAyYzQ1NjQ2M2JjMGIwMTAwIAAoATICZW46Bnp1cmljaEAASgBQAA%3D%3D&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
-        elif city == "Budapest":
-            url = "https://www.booking.com/searchresults.html?ss=Budapest%2C+Pest%2C+Hungary&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-850553&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=3d1b651b22ea018e&ac_meta=GhBlMDViNjUxZjBlOGYwMDQxIAAoATICZW46CGJ1ZGFwZXN0QABKAFAA&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
+        # Error condition if user can't reach to Internet
 
-        print(url)
+        if not self.check_internet_connection():
+            messagebox.showerror("Error", "No internet connection available.")
+            return
+        try:
+            if city == "Rome":
+                url = "https://www.booking.com/searchresults.html?ss=Rome%2C+Lazio%2C+Italy&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-126693&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=68f06406a62e018b&ac_meta=GhA5MzJkNjQwYzI3ODQwMDQwIAAoATICZW46BHJvbWVAAEoAUAA%3D&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
+            elif city == "Barcelona":
+                url = "https://www.booking.com/searchresults.html?ss=Barcelona%2C+Catalonia%2C+Spain&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-372490&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=1ecb654f2a0201c9&ac_meta=GhBkZmJlNjU2ZDQwYjgwMzI2IAAoATICZW46CWJhcmNlbG9uYUAASgBQAA%3D%3D&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
+            elif city == "Paris":
+                url = "https://www.booking.com/searchresults.html?ss=Paris%2C+Ile+de+France%2C+France&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-1456928&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=5a1c6547c8b503ed&ac_meta=GhA0N2FkNjU0ZWZiYjYwMzI3IAAoATICZW46BXBhcmlzQABKAFAA&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
+            elif city == "Berlin":
+                url = "https://www.booking.com/searchresults.html?ss=Berlin%2C+Berlin+Federal+State%2C+Germany&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-1746443&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=b2cb652eee2e0712&ac_meta=GhBjMGI1NjUzZTA2M2UwMTViIAAoATICZW46BmJlcmxpbkAASgBQAA%3D%3D&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
+            elif city == "London":
+                url = "https://www.booking.com/searchresults.html?ss=London%2C+Greater+London%2C+United+Kingdom&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-2601889&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=649964ae8d98025f&ac_meta=GhBmYzBlNjRiZjgyYWEwMjVlIAAoATICZW46BmxvbmRvbkAASgBQAA%3D%3D&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
+            elif city == "Vienna":
+                url = "https://www.booking.com/searchresults.html?ss=Vienna%2C+Vienna+%28state%29%2C+Austria&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-1995499&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=c85664a1e65a01a7&ac_meta=GhBkOWQyNjRhZDA3ZTQwMjI4IAAoATICZW46BnZpZW5uYUAASgBQAA%3D%3D&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
+            elif city == "Brussels":
+                url = "https://www.booking.com/searchresults.html?ss=Brussels%2C+Brussels+Region%2C+Belgium&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-1955538&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=4ad451e0f8d6005c&ac_meta=GhA4ZDExNTFlNmI2NjIwMDYzIAAoATICZW46CGJydXNzZWxzQABKAFAA&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
+            elif city == "Amsterdam":
+                url = "https://www.booking.com/searchresults.html?ss=Amsterdam%2C+Noord-Holland%2C+Netherlands&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-2140479&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=c6dc6484bb650445&ac_meta=GhBiM2M5NjQ5MWZiNWMwMGNmIAAoATICZW46CWFtc3RlcmRhbUAASgBQAA%3D%3D&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
+            elif city == "Zurich":
+                url = "https://www.booking.com/searchresults.html?ss=Z%C3%BCrich%2C+Canton+of+Zurich%2C+Switzerland&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-2554935&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=d57b640de50301d5&ac_meta=GhAyYzQ1NjQ2M2JjMGIwMTAwIAAoATICZW46Bnp1cmljaEAASgBQAA%3D%3D&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
+            elif city == "Budapest":
+                url = "https://www.booking.com/searchresults.html?ss=Budapest%2C+Pest%2C+Hungary&label=gen173nr-1FCAEoggI46AdIM1gEaOQBiAEBmAExuAEHyAEP2AEB6AEBAECiAIBqAIDuAKo8sKxBsACAdICJGZlZWVmNGJjLWI2OGEtNGM0OS05ODk0LTM2ZGQ4YzkxYzY0MNgCBeACAQ&aid=304142&lang=en-us&sb=1&src_elem=sb&src=searchresults&dest_id=-850553&dest_type=city&ac_position=0&ac_click_type=b&ac_langcode=en&ac_suggestion_list_length=5&search_selected=true&search_pageview_id=3d1b651b22ea018e&ac_meta=GhBlMDViNjUxZjBlOGYwMDQxIAAoATICZW46CGJ1ZGFwZXN0QABKAFAA&checkin="+date1+"&checkout="+date2+"&group_adults=2&no_rooms=1&group_children=0&selected_currency=EUR"
 
-        headers = {'User-Agent': 'Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, likeGecko) Chrome/51.0.2704.64 Safari/537.36','Accept-Language': 'en-US, en;q=0.5'}
+            print(url)
 
-        response = requests.get(url, headers=headers)
-        soup = BeautifulSoup(response.text, 'html.parser')
+            headers = {'User-Agent': 'Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, likeGecko) Chrome/51.0.2704.64 Safari/537.36','Accept-Language': 'en-US, en;q=0.5'}
 
-        hotels = soup.find_all('div', {"data-testid": "property-card"})
-        hotels_data = []
+            response = requests.get(url, headers=headers, timeout=10)
+            response.raise_for_status()
 
-        rating_type = ""
-        counter = 0
+            soup = BeautifulSoup(response.text, 'html.parser')
 
-        for hotel in hotels:
-           # To scrape first 10 hotels
+            hotels = soup.find_all('div', {"data-testid": "property-card"})
+            hotels_data = []
 
-            if counter == 10:
-                break
+            rating_type = ""
+            counter = 0
 
-            name_element = hotel.find('div', {'data-testid': 'title'})
-            name = name_element.text.strip()
+            for hotel in hotels:
+            # To scrape first 10 hotels
 
-            rating_element = hotel.find("span", {"class": "a3332d346a"})
+                if counter == 10:
+                    break
 
-            # Scraping with type - if it is none I am scraping just rating and it is none as well giving the datas as "not given"
+                name_element = hotel.find('div', {'data-testid': 'title'})
+                name = name_element.text.strip()
 
-            if rating_element is not None:
-                rating_type = rating_element.text.strip().split()[0]
-                rating = rating_element.text.strip().split()[1]
-            else:
-                rating_element = hotel.find("div", {"class": "a3b8729ab1 d86cee9b25"})
+                rating_element = hotel.find("span", {"class": "a3332d346a"})
+
+                # Scraping with type - if it is none I am scraping just rating and it is none as well giving the datas as "not given"
+
                 if rating_element is not None:
-                    rating_type = "Not Given"
+                    rating_type = rating_element.text.strip().split()[0]
                     rating = rating_element.text.strip().split()[1]
                 else:
-                    rating_type = "Not Given"
-                    rating = "Not Given"
+                    rating_element = hotel.find("div", {"class": "a3b8729ab1 d86cee9b25"})
+                    if rating_element is not None:
+                        rating_type = "Not Given"
+                        rating = rating_element.text.strip().split()[1]
+                    else:
+                        rating_type = "Not Given"
+                        rating = "Not Given"
 
-            address_element = hotel.find("span", {"data-testid": "address"})
-            address = address_element.text.strip()
+                address_element = hotel.find("span", {"data-testid": "address"})
+                address = address_element.text.strip()
 
-            distance_element = hotel.find("span", {"data-testid": "distance"})
-            distance = distance_element.text.strip()
+                distance_element = hotel.find("span", {"data-testid": "distance"})
+                distance = distance_element.text.strip()
 
-            price_element = hotel.find("span", {"data-testid": "price-and-discounted-price"})
-            price = price_element.text.strip()
+                price_element = hotel.find("span", {"data-testid": "price-and-discounted-price"})
+                price = price_element.text.strip()
 
-            # Appending the list with scraped datas
+                # Appending the list with scraped datas
 
-            hotels_data.append({'Hotel Name': name, "Address": address, "Distance": distance,
+                hotels_data.append({'Hotel Name': name, "Address": address, "Distance": distance,
                                 'Type and Rating': rating_type + "\n" + rating, "Price": price})
 
-            counter += 1
+                counter += 1
 
-        # Sorting based on ratings
+            # Sorting based on ratings
 
-        hotels_data.sort(key=lambda x: float(x['Type and Rating'].split('\n')[1]), reverse=True)
+            hotels_data.sort(key=lambda x: float(x['Type and Rating'].split('\n')[1]), reverse=True)
 
-        hotels = pd.DataFrame(hotels_data)
-        hotels.head()
-        hotels.to_csv('myhotels.csv', header=True, index=False)
+            hotels = pd.DataFrame(hotels_data)
+            hotels.head()
+            hotels.to_csv('myhotels.csv', header=True, index=False)
+
+        # Request error handling
+        except requests.Timeout:
+            messagebox.showerror("Error", "Request timed out. Please check your internet connection.")
+            return
+
+        except requests.RequestException as e:
+            messagebox.showerror("Error", f"Error fetching data: {e}")
+            return
 
 
 class GUI:
@@ -174,6 +201,9 @@ class GUI:
             if self.currency == "tl":
                 for index, row in hotels_data.iterrows():
                     hotels_data.at[index, 'Price'] = convert_to_tl(row['Price'])
+
+                # Writes on csv file
+                hotels_data.to_csv('myhotels.csv', header=True, index=False)
 
             custom_style = ttk.Style()
             custom_style.configure("Custom.Treeview", rowheight=65)
