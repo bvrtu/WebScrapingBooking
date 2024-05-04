@@ -134,6 +134,7 @@ class GUI:
         check_in_date = ""
         check_out_date = ""
         city_string = ""
+        self.last_search = {"city": "", "check_in_date": "", "check_out_date": "", "currency": None}
 
         # A function to take dates from calendar and turn them into correct string form to eject in url
 
@@ -174,6 +175,15 @@ class GUI:
         # When you press the "Find Your Hotel!" button this function works. All frames, buttons, tree, etc. in this function.
 
         def searchfunc(city,date1,date2):
+
+            if self.last_search["city"] == city and self.last_search["check_in_date"] == date1 and self.last_search["check_out_date"] == date2 and self.last_search["currency"] == self.currency:
+                messagebox.showinfo("Warning", "You haven't changed any values from your last search.")
+                return
+
+            self.last_search["city"] = city
+            self.last_search["check_in_date"] = date1
+            self.last_search["check_out_date"] = date2
+            self.last_search["currency"] = self.currency
 
             global currency
 
