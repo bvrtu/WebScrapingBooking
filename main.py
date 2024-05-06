@@ -8,6 +8,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.widgets import DateEntry
 from tkinter import messagebox
 import locale
+import os
 
 
 class HotelScraper:
@@ -190,7 +191,17 @@ class GUI:
             self.currency = "tl"
 
         def update_treeview():
-            hotels_data = pd.read_csv('myhotels.csv')
+            try:
+                hotels_data = pd.read_csv('myhotels.csv')
+
+            except FileNotFoundError:
+                messagebox.showerror("Error", "Hotel data file not found. Please perform a search first.")
+                return
+
+            except pd.errors.EmptyDataError:
+                messagebox.showerror("Error", "Hotel data file is empty. Please perform a search first.")
+                return
+
             for child in hotelframe.winfo_children():
                 if isinstance(child, ttk.Treeview):
                     child.destroy()
@@ -221,6 +232,16 @@ class GUI:
         # When you press the "Find Your Hotel!" button this function works.
 
         def searchfunc(city,date1,date2):
+
+            if not os.path.isfile('myhotels.csv'):
+                messagebox.showerror("Error", "Hotel data file not found. Please perform a search first.")
+                return
+
+            try:
+                hotels_data = pd.read_csv('myhotels.csv')
+            except pd.errors.EmptyDataError:
+                messagebox.showerror("Error", "Hotel data file is empty. Please perform a search first.")
+                return
 
             if self.last_search["city"] == city and self.last_search["check_in_date"] == date1 and self.last_search["check_out_date"] == date2:
                 if self.last_search["currency"] != self.currency:
@@ -277,7 +298,15 @@ class GUI:
             scraper = HotelScraper()
             scraper.scrape_hotels(city_string, check_in_date, check_out_date)
 
-            hotels_data = pd.read_csv('myhotels.csv')
+            try:
+                hotels_data = pd.read_csv('myhotels.csv')
+
+            except FileNotFoundError:
+                messagebox.showerror("Error", "Hotel data file not found. Please perform a search first.")
+                return
+            except pd.errors.EmptyDataError:
+                messagebox.showerror("Error", "Hotel data file is empty. Please perform a search first.")
+                return
 
             # While scraping I take the prices as euro on default. If user selects tl this function returns euro prices to TL prices.
 
