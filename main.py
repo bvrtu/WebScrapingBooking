@@ -85,13 +85,8 @@ class HotelScraper:
                     rating_type = rating_element.text.strip().split()[0]
                     rating = rating_element.text.strip().split()[1]
                 else:
-                    rating_element = hotel.find("div", {"class": "a3b8729ab1 d86cee9b25"})
-                    if rating_element is not None:
-                        rating_type = "Not Given"
-                        rating = rating_element.text.strip().split()[1]
-                    else:
-                        rating_type = "Not Given"
-                        rating = "Not Given"
+                    rating_type = "Not Given"
+                    rating = "Not Given"
 
                 address_element = hotel.find("span", {"data-testid": "address"})
                 address = address_element.text.strip()
@@ -111,7 +106,14 @@ class HotelScraper:
 
             # Sorting based on ratings
 
-            hotels_data.sort(key=lambda x: float(x['Type and Rating'].split('\n')[1]), reverse=True)
+            def sort_by_rating(x):
+                rating = x['Type and Rating'].split('\n')[1]
+                if rating == 'Not Given':
+                    return float('-inf')
+                else:
+                    return float(rating)
+
+            hotels_data.sort(key=sort_by_rating, reverse=True)
 
             hotels = pd.DataFrame(hotels_data)
             hotels.head()
@@ -298,9 +300,7 @@ class GUI:
 
             # Returning the table to dynamic form. With this for loop I can show the table dynamically (If user changes the search table is changing too)
 
-            for child in hotelframe.winfo_children():
-                if isinstance(child, ttk.Treeview):
-                    child.destroy()
+            update_treeview()
 
             # Creating a treeview to display hotel data
 
