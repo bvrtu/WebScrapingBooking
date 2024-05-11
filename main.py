@@ -4,11 +4,11 @@ from bs4 import BeautifulSoup
 import csv
 import tkinter as tk
 from tkinter import ttk
-import ttkbootstrap as ttk
-from ttkbootstrap.widgets import DateEntry
-from tkinter import messagebox
-import locale
-import os
+import ttkbootstrap as ttk # To more customizable GUI
+from ttkbootstrap.widgets import DateEntry # To calendar
+from tkinter import messagebox # To give error messages
+import locale # To price converting
+import os # To reach file
 
 
 class HotelScraper:
@@ -78,9 +78,9 @@ class HotelScraper:
                 name_element = hotel.find('div', {'data-testid': 'title'})
                 name = name_element.text.strip()
 
-                rating_element = hotel.find("span", {"class": "a3332d346a"})
+                rating_element = hotel.find("a", {"data-testid": "secondary-review-score-link"})
 
-                # Scraping with type - if it is none I am scraping just rating and it is none as well giving the datas as "not given"
+                # Scraping the rating with type
 
                 if rating_element is not None:
                     rating_type = rating_element.text.strip().split()[0]
@@ -110,7 +110,7 @@ class HotelScraper:
             def sort_by_rating(x):
                 rating = x['Type and Rating'].split('\n')[1]
                 if rating == 'Not Given':
-                    return float('-inf')
+                    return float('-inf') # Sending not givens at the end of the list
                 else:
                     return float(rating)
 
@@ -151,7 +151,7 @@ class GUI:
                 return
             f_check_in_date = check_in_date.split("/")
             f_check_out_date = check_out_date.split("/")
-            check_in_date = "20" + f_check_in_date[2] + "-" + f_check_in_date[0] + "-" + f_check_in_date[1]
+            check_in_date = "20" + f_check_in_date[2] + "-" + f_check_in_date[0] + "-" + f_check_in_date[1] # Turning the date into appropriate URL format
             check_out_date = "20" + f_check_out_date[2] + "-" + f_check_out_date[0] + "-" + f_check_out_date[1]
 
         # Getting city from dropdown list or combobox
@@ -202,9 +202,13 @@ class GUI:
                 messagebox.showerror("Error", "Hotel data file is empty. Please perform a search first.")
                 return
 
+            # Returning the table into dynamic form. (If the user makes a search the table changes on GUI.)
             for child in hotelframe.winfo_children():
                 if isinstance(child, ttk.Treeview):
                     child.destroy()
+
+            custom_style = ttk.Style()
+            custom_style.configure("Custom.Treeview", rowheight=85)
 
             tree = ttk.Treeview(hotelframe, style="Custom.Treeview")
             tree["columns"] = ("Hotel Name", "Address", "Distance", "Type and Rating", "Price")
@@ -224,8 +228,7 @@ class GUI:
             tree.heading("Price", text="Price", anchor=tk.W)
 
             for index, row in hotels_data.head(5).iterrows():
-                tree.insert("", index, values=(
-                    row['Hotel Name'], row['Address'], row['Distance'], row['Type and Rating'], row['Price']))
+                tree.insert("", index, values=(row['Hotel Name'], row['Address'], row['Distance'], row['Type and Rating'], row['Price']))
 
             tree.pack(expand=True, fill=tk.BOTH)
 
@@ -243,6 +246,7 @@ class GUI:
                 messagebox.showerror("Error", "Hotel data file is empty. Please perform a search first.")
                 return
 
+            # Price conversion if block. (If user do not changes the city and the dates it means just it is price converting)
             if self.last_search["city"] == city and self.last_search["check_in_date"] == date1 and self.last_search["check_out_date"] == date2:
                 if self.last_search["currency"] != self.currency:
                     if self.currency == "tl":
@@ -270,7 +274,7 @@ class GUI:
                         self.last_search["currency"] = self.currency
 
 
-                else:
+                else: # If user changes nothing from the last search (city + dates + price currency)
                     messagebox.showinfo("Warning", "You haven't changed any values from your last search.")
                 return
 
@@ -323,11 +327,6 @@ class GUI:
             self.last_search["check_in_date"] = date1
             self.last_search["check_out_date"] = date2
             self.last_search["currency"] = self.currency
-
-            custom_style = ttk.Style()
-            custom_style.configure("Custom.Treeview", rowheight=85)
-
-            # Returning the table to dynamic form. (If user changes the search table is changing too)
 
             create_and_update_treeview()
 
