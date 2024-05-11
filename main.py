@@ -190,7 +190,7 @@ class GUI:
         def tl_clicked():
             self.currency = "tl"
 
-        def update_treeview():
+        def create_and_update_treeview():
             try:
                 hotels_data = pd.read_csv('myhotels.csv')
 
@@ -251,7 +251,7 @@ class GUI:
                             hotels_data.at[index, 'Price'] = convert_to_tl(row['Price'])
                         hotels_data.to_csv('myhotels.csv', header=True, index=False)
 
-                        update_treeview()
+                        create_and_update_treeview()
 
                         messagebox.showinfo("Info", "Currency conversion applied.")
 
@@ -263,7 +263,7 @@ class GUI:
                             hotels_data.at[index, 'Price'] = convert_to_euro(row['Price'])
                         hotels_data.to_csv('myhotels.csv', header=True, index=False)
 
-                        update_treeview()
+                        create_and_update_treeview()
 
                         messagebox.showinfo("Info", "Currency conversion applied.")
 
@@ -317,7 +317,7 @@ class GUI:
                 # Writes on csv file
                 hotels_data.to_csv('myhotels.csv', header=True, index=False)
 
-            update_treeview()
+            create_and_update_treeview()
 
             self.last_search["city"] = city
             self.last_search["check_in_date"] = date1
@@ -325,47 +325,16 @@ class GUI:
             self.last_search["currency"] = self.currency
 
             custom_style = ttk.Style()
-            custom_style.configure("Custom.Treeview", rowheight=65)
+            custom_style.configure("Custom.Treeview", rowheight=85)
 
-            # Returning the table to dynamic form. With this for loop I can show the table dynamically (If user changes the search table is changing too)
+            # Returning the table to dynamic form. (If user changes the search table is changing too)
 
-            update_treeview()
-
-            # Creating a treeview to display hotel data
-
-            tree = ttk.Treeview(hotelframe,style="Custom.Treeview")
-            tree["columns"] = ("Hotel Name", "Address", "Distance", "Type and Rating", "Price")
-
-            # Defining the columns
-
-            tree.column("#0", width=0, stretch=tk.NO)  # Hidden column
-            tree.column("Hotel Name", anchor=tk.W, width=400)
-            tree.column("Address", anchor=tk.W, width=400)
-            tree.column("Distance", anchor=tk.W, width=400)
-            tree.column("Type and Rating", anchor=tk.W, width=400)
-            tree.column("Price", anchor=tk.W, width=400)
-
-            # Defining the headings
-
-            tree.heading("#0", text="", anchor=tk.W)
-            tree.heading("Hotel Name", text="Hotel Name", anchor=tk.W)
-            tree.heading("Address", text="Address", anchor=tk.W)
-            tree.heading("Distance", text="Distance", anchor=tk.W)
-            tree.heading("Type and Rating", text="Type and Rating", anchor=tk.W)
-            tree.heading("Price", text="Price", anchor=tk.W)
-
-            # Inserting the datas into the tree
-
-            for index, row in hotels_data.head(5).iterrows():
-                tree.insert("",index, values=(
-                row['Hotel Name'], row['Address'], row['Distance'], row['Type and Rating'], row['Price']))
-
-            tree.pack(expand=True, fill=tk.BOTH)
+            create_and_update_treeview()
 
 
         # Window
 
-        window = ttk.Window(themename="darkly")
+        window = ttk.Window(themename="vapor")
         window.title("Find Your Hotel")
         window.state("zoomed")
 
@@ -379,7 +348,7 @@ class GUI:
 
         frame1 = ttk.Frame(mainframe, width=300, height=200, borderwidth=10, relief="groove")
         frame1.pack_propagate(False)
-        frame1.place(x=200,y=0)
+        frame1.place(x=200,y=50)
 
         city_label = ttk.Label(frame1, text="Choose a city from the list.")
         city_label.pack()
@@ -400,38 +369,38 @@ class GUI:
 
         # Second subframe to select check-in and out dates
 
-        frame2 = ttk.Frame(mainframe,width=300, height=200,borderwidth=10, relief="groove")
+        frame2 = ttk.Frame(mainframe, width=300, height=200, borderwidth=10, relief="groove")
         frame2.pack_propagate(False)
-        frame2.place(x=550, y=0)
+        frame2.place(x=550, y=50)
 
         label1 = ttk.Label(frame2, text="Check-in Date")
         label1.pack()
 
         calendar1 = DateEntry(frame2)
-        calendar1.pack()
+        calendar1.pack(pady=5)
 
         label2 = ttk.Label(frame2, text="Check-out Date")
-        label2.pack()
+        label2.pack(pady=5)
 
         calendar2 = DateEntry(frame2)
-        calendar2.pack(pady=10)
+        calendar2.pack()
 
-        button = ttk.Button(frame2, text="Select Dates", command=get_dates)
-        button.pack()
+        button = ttk.Button(frame2, text="Select Dates", command=get_dates, bootstyle = "secondary")
+        button.pack(pady=14)
 
         # Third subframe to searching button
 
         frame3 = ttk.Frame(mainframe)
-        frame3.place(x=645, y=270)
+        frame3.place(x=645, y=300)
 
-        button2 = ttk.Button(frame3, text="Find Your Hotel!", command=lambda: searchfunc(city_string, check_in_date, check_out_date))
+        button2 = ttk.Button(frame3, text="Find Your Hotel!", command=lambda: searchfunc(city_string, check_in_date, check_out_date), bootstyle = "success")
         button2.pack()
 
         # Fourth subframe to pick currency
 
         frame4 = ttk.Frame(mainframe,width=300, height=200, borderwidth=10, relief="groove")
         frame4.pack_propagate(False)
-        frame4.place(x=900, y=0)
+        frame4.place(x=900, y=50)
 
         label4 = ttk.Label(frame4, text="Price Currency")
         label4.pack()
