@@ -9,6 +9,7 @@ from ttkbootstrap.widgets import DateEntry # To calendar
 from tkinter import messagebox # To give error messages
 import locale # To price converting
 import os # To reach file
+from datetime import datetime # To check the date format
 
 
 class HotelScraper:
@@ -83,8 +84,9 @@ class HotelScraper:
                 # Scraping the rating with type
 
                 if rating_element is not None:
-                    rating_type = rating_element.text.strip().split()[0]
-                    rating = rating_element.text.strip().split()[1]
+                    split_text = rating_element.text.strip().split()
+                    rating_type = split_text[0]
+                    rating = split_text[1]
                 else:
                     rating_type = "Not Given"
                     rating = "Not Given"
@@ -140,12 +142,26 @@ class GUI:
         city_string = ""
         self.last_search = {"city": "", "check_in_date": "", "check_out_date": "", "currency": None}
 
+        # Checking date format
+        def check_date_format(date_string):
+            try:
+                # Date formatting
+                datetime.strptime(date_string, '%m/%d/%y')
+                return True
+            except ValueError:
+                return False
+
         # A function to take dates from calendar and turn them into correct string form to eject in url
 
         def get_dates():
             nonlocal check_in_date, check_out_date
             check_in_date = calendar1.entry.get()
             check_out_date = calendar2.entry.get()
+
+            if not check_date_format(check_in_date) or not check_date_format(check_out_date):
+                messagebox.showerror("Error", "Invalid date format. Please use mm/dd/yy format.")
+                return
+
             if check_out_date <= check_in_date:
                 messagebox.showerror("Error", "Check-out date cannot be before or same as check-in date.")
                 return
