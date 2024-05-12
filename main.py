@@ -84,9 +84,11 @@ class HotelScraper:
                 # Scraping the rating with type
 
                 if rating_element is not None:
-                    split_text = rating_element.text.strip().split()
+                    rating_text = rating_element['aria-label'] # In HTML it looks like "aria-label = Comfort: Scored 8.9". I'm taking the aria-label and splitting into type and rating.
+                    split_text = rating_text.split(": ")
                     rating_type = split_text[0]
-                    rating = split_text[1]
+                    rating = split_text[1].split()[1]
+                    rating = float(rating)
                 else:
                     rating_type = "Not Given"
                     rating = "Not Given"
@@ -103,7 +105,7 @@ class HotelScraper:
                 # Appending the list with scraped datas
 
                 hotels_data.append({'Hotel Name': name, "Address": address, "Distance": distance,
-                                'Type and Rating': rating_type + "\n" + rating, "Price": price})
+                                'Type and Rating': rating_type + "\n" + str(rating), "Price": price})
 
                 counter += 1
 
