@@ -164,19 +164,41 @@ class GUI:
                 messagebox.showerror("Error", "Invalid date format. Please use mm/dd/yy format.")
                 return
 
-            if check_out_date <= check_in_date:
+            start_date = datetime.strptime(check_in_date, "%m/%d/%y").date()
+            end_date = datetime.strptime(check_out_date, "%m/%d/%y").date()
+            today_date = datetime.today().date()
+            date_difference_days = (end_date - start_date).days
+            date_difference_days_2 = (end_date - start_date).days
+
+            if date_difference_days > 90:
+                messagebox.showerror("Error", "You cannot have more than 90 days between check-in and check-out dates.")
+                return
+
+            if date_difference_days_2 <= 0:
                 messagebox.showerror("Error", "Check-out date cannot be before or same as check-in date.")
                 return
+
+            if start_date < today_date:
+                messagebox.showerror("Error", "Check-in date cannot be before today.")
+                return
+
             f_check_in_date = check_in_date.split("/")
             f_check_out_date = check_out_date.split("/")
             check_in_date = "20" + f_check_in_date[2] + "-" + f_check_in_date[0] + "-" + f_check_in_date[1] # Turning the date into appropriate URL format
             check_out_date = "20" + f_check_out_date[2] + "-" + f_check_out_date[0] + "-" + f_check_out_date[1]
+
+            update_search_button_state()
 
         # Getting city from dropdown list or combobox
 
         def get_city(event):
             nonlocal city_string
             city_string = combobox.get()
+
+            if city_string:
+                button2.config(state="normal")
+            else:
+                button2.config(state="disabled")
 
         # Converting the currency
 
@@ -231,12 +253,12 @@ class GUI:
             tree = ttk.Treeview(hotelframe, style="Custom.Treeview")
             tree["columns"] = ("Hotel Name", "Address", "Distance", "Type and Rating", "Price")
 
-            tree.column("#0", width=0, stretch=tk.NO)  # Hidden column
-            tree.column("Hotel Name", anchor=tk.W, width=400)
-            tree.column("Address", anchor=tk.W, width=400)
-            tree.column("Distance", anchor=tk.W, width=400)
-            tree.column("Type and Rating", anchor=tk.W, width=400)
-            tree.column("Price", anchor=tk.W, width=400)
+            tree.column("#0", width=0)  # Hidden column
+            tree.column("Hotel Name", anchor=tk.W,width=300)
+            tree.column("Address", anchor=tk.W,width=300)
+            tree.column("Distance", anchor=tk.W,width=300)
+            tree.column("Type and Rating", anchor=tk.W,width=300)
+            tree.column("Price", anchor=tk.W,width=300)
 
             tree.heading("#0", text="", anchor=tk.W)
             tree.heading("Hotel Name", text="Hotel Name", anchor=tk.W)
@@ -248,7 +270,7 @@ class GUI:
             for index, row in hotels_data.head(5).iterrows():
                 tree.insert("", index, values=(row['Hotel Name'], row['Address'], row['Distance'], row['Type and Rating'], row['Price']))
 
-            tree.pack(expand=True, fill=tk.BOTH)
+            tree.pack()
 
         # When you press the "Find Your Hotel!" button this function works.
 
@@ -355,6 +377,10 @@ class GUI:
         window.title("Find Your Hotel")
         window.state("zoomed")
 
+        logo_image = tk.PhotoImage(file="logo.png")
+
+        window.iconphoto(False, logo_image)
+
         # First mainframe to select city,currency and dates
 
         mainframe = ttk.Frame(window,width=2000,height=400,borderwidth=10, relief="groove")
@@ -410,7 +436,7 @@ class GUI:
         frame3 = ttk.Frame(mainframe)
         frame3.place(x=645, y=300)
 
-        button2 = ttk.Button(frame3, text="Find Your Hotel!", command=lambda: searchfunc(city_string, check_in_date, check_out_date), bootstyle = "success")
+        button2 = ttk.Button(frame3, text="Find Your Hotel!", command=lambda: searchfunc(city_string, check_in_date, check_out_date), bootstyle = "success", state="disabled")
         button2.pack()
 
         # Fourth subframe to pick currency
@@ -431,6 +457,18 @@ class GUI:
 
         hotelframe = ttk.Frame(window, width=2000, height=500, borderwidth=10, relief="groove")
         hotelframe.pack()
+
+        def update_search_button_state():
+            if city_string and check_in_date and check_out_date and self.currency:
+                button2.config(state="enabled")
+            else:
+                button2.config(state="disabled")
+
+        combobox.bind("<<ComboboxSelected>>", lambda event: (get_city(event), update_search_button_state()))
+        calendar1.bind("<<DateEntrySelected>>", lambda event: (get_dates(), update_search_button_state()))
+        calendar2.bind("<<DateEntrySelected>>", lambda event: (get_dates(), update_search_button_state()))
+        radiobutton.config(command=lambda: (euro_clicked(), update_search_button_state()))
+        radiobutton2.config(command=lambda: (tl_clicked(), update_search_button_state()))
 
         window.mainloop()
 
