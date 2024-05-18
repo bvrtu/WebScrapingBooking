@@ -147,6 +147,7 @@ class GUI:
         self.currency = None
 
     def gui(self):
+        locale.setlocale(locale.LC_TIME, 'en_US.UTF-8')
         check_in_date = ""
         check_out_date = ""
         city_string = ""
@@ -156,7 +157,7 @@ class GUI:
         def check_date_format(date_string):
             try:
                 # Date formatting
-                datetime.strptime(date_string, '%m/%d/%y')
+                datetime.strptime(date_string, '%m/%d/%Y')
                 return True
             except ValueError:
                 return False
@@ -169,11 +170,11 @@ class GUI:
             check_out_date = calendar2.entry.get()
 
             if not check_date_format(check_in_date) or not check_date_format(check_out_date):
-                messagebox.showerror("Error", "Invalid date format. Please use mm/dd/yy format.")
+                messagebox.showerror("Error", "Invalid date format. Please use mm/dd/yyyy format.")
                 return
 
-            start_date = datetime.strptime(check_in_date, "%m/%d/%y").date()
-            end_date = datetime.strptime(check_out_date, "%m/%d/%y").date()
+            start_date = datetime.strptime(check_in_date, "%m/%d/%Y").date()
+            end_date = datetime.strptime(check_out_date, "%m/%d/%Y").date()
             today_date = datetime.today().date()
             date_difference_days = (end_date - start_date).days
             date_difference_days_2 = (end_date - start_date).days
@@ -190,10 +191,10 @@ class GUI:
                 messagebox.showerror("Error", "Check-in date cannot be before today.")
                 return
 
-            f_check_in_date = check_in_date.split("/") # mm/dd/yy to "mm", "dd", "yy"
+            f_check_in_date = check_in_date.split("/") # mm/dd/yyyy to "mm", "dd", "yyyy"
             f_check_out_date = check_out_date.split("/")
-            check_in_date = "20" + f_check_in_date[2] + "-" + f_check_in_date[0] + "-" + f_check_in_date[1] # Turning the date into appropriate URL format
-            check_out_date = "20" + f_check_out_date[2] + "-" + f_check_out_date[0] + "-" + f_check_out_date[1] # In URL yyyy-mm-dd
+            check_in_date = f_check_in_date[2] + "-" + f_check_in_date[0] + "-" + f_check_in_date[1] # Turning the date into appropriate URL format
+            check_out_date = f_check_out_date[2] + "-" + f_check_out_date[0] + "-" + f_check_out_date[1] # In URL yyyy-mm-dd
 
             update_search_button_state()
 
