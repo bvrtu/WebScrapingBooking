@@ -94,18 +94,26 @@ class HotelScraper:
                     rating = "Not Given"
 
                 address_element = hotel.find("span", {"data-testid": "address"})
-                address = address_element.text.strip()
+                if address_element is not None:
+                    address = address_element.text.strip()
+                else:
+                    address = "Not Given"
 
                 distance_element = hotel.find("span", {"data-testid": "distance"})
-                distance = distance_element.text.strip()
+                if distance_element is not None:
+                    distance = distance_element.text.strip()
+                else:
+                    distance = "Not Given"
 
                 price_element = hotel.find("span", {"data-testid": "price-and-discounted-price"})
-                price = price_element.text.strip()
+                if price_element is not None:
+                    price = price_element.text.strip()
+                else:
+                    price = "Not Given"
 
                 # Appending the list with scraped datas
 
-                hotels_data.append({'Hotel Name': name, "Address": address, "Distance": distance,
-                                'Type and Rating': rating_type + "\n" + str(rating), "Price": price})
+                hotels_data.append({'Hotel Name': name, "Address": address, "Distance": distance,"Type and Rating": rating_type + "\n" + str(rating), "Price": price})
 
                 counter += 1
 
@@ -182,14 +190,14 @@ class GUI:
                 messagebox.showerror("Error", "Check-in date cannot be before today.")
                 return
 
-            f_check_in_date = check_in_date.split("/")
+            f_check_in_date = check_in_date.split("/") # mm/dd/yy to "mm", "dd", "yy"
             f_check_out_date = check_out_date.split("/")
             check_in_date = "20" + f_check_in_date[2] + "-" + f_check_in_date[0] + "-" + f_check_in_date[1] # Turning the date into appropriate URL format
-            check_out_date = "20" + f_check_out_date[2] + "-" + f_check_out_date[0] + "-" + f_check_out_date[1]
+            check_out_date = "20" + f_check_out_date[2] + "-" + f_check_out_date[0] + "-" + f_check_out_date[1] # In URL yyyy-mm-dd
 
             update_search_button_state()
 
-        # Getting city from dropdown list or combobox
+        # Getting city from dropdown list
 
         def get_city(event):
             nonlocal city_string
@@ -204,7 +212,7 @@ class GUI:
 
         def convert_to_euro(price_tl):
             tl_to_euro_rate = 0.0333333  # TL to Euro conversion rate (1 TL = 0.0333333 Euro)
-            price_tl = price_tl.replace('TL', '').strip()  # Remove 'TL' and any leading/trailing whitespace
+            price_tl = price_tl.replace('TL', '').strip()  # Remove TL and any leading/trailing whitespace
             price_euro = round(float(price_tl) * tl_to_euro_rate, 2)
             return f"{price_euro} €"
 
@@ -230,6 +238,7 @@ class GUI:
         def tl_clicked():
             self.currency = "tl"
 
+        # Creating and updating the treeview
         def create_and_update_treeview():
             try:
                 hotels_data = pd.read_csv('myhotels.csv')
