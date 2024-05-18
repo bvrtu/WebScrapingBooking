@@ -170,6 +170,7 @@ class GUI:
             check_out_date = calendar2.entry.get()
 
             if not check_date_format(check_in_date) or not check_date_format(check_out_date):
+                button2.config(state="disabled")
                 messagebox.showerror("Error", "Invalid date format. Please use mm/dd/yyyy format.")
                 return
 
@@ -180,14 +181,17 @@ class GUI:
             date_difference_days_2 = (end_date - start_date).days
 
             if date_difference_days > 90:
+                button2.config(state="disabled")
                 messagebox.showerror("Error", "You cannot have more than 90 days between check-in and check-out dates.")
                 return
 
             if date_difference_days_2 <= 0:
+                button2.config(state="disabled")
                 messagebox.showerror("Error", "Check-out date cannot be before or same as check-in date.")
                 return
 
             if start_date < today_date:
+                button2.config(state="disabled")
                 messagebox.showerror("Error", "Check-in date cannot be before today.")
                 return
 
