@@ -171,6 +171,8 @@ class GUI:
 
             if not check_date_format(check_in_date) or not check_date_format(check_out_date):
                 button2.config(state="disabled")
+                check_in_date = None
+                check_out_date = None
                 messagebox.showerror("Error", "Invalid date format. Please use mm/dd/yyyy format.")
                 return
 
@@ -182,16 +184,22 @@ class GUI:
 
             if date_difference_days > 90:
                 button2.config(state="disabled")
+                check_in_date = None
+                check_out_date = None
                 messagebox.showerror("Error", "You cannot have more than 90 days between check-in and check-out dates.")
                 return
 
             if date_difference_days_2 <= 0:
                 button2.config(state="disabled")
+                check_in_date = None
+                check_out_date = None
                 messagebox.showerror("Error", "Check-out date cannot be before or same as check-in date.")
                 return
 
             if start_date < today_date:
                 button2.config(state="disabled")
+                check_in_date = None
+                check_out_date = None
                 messagebox.showerror("Error", "Check-in date cannot be before today.")
                 return
 
